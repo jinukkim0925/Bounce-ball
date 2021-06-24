@@ -28,14 +28,14 @@ public class gravity extends aframe {
 
 	int red = new Color(255, 0, 0).getRGB();
 
-	double g = 1, m = 2;
+	double g = 1, m = 1;
 	BufferedImage bi;
 	static int p1, p2, p3, p4;
 
 	public gravity() {
 
 		// TODO Auto-generated constructor stub
-		fs("중력");
+		fs("바운스볼");
 		np.add(jp1 = new JPanel() {
 			@Override
 			protected void paintComponent(Graphics g) {
@@ -207,6 +207,7 @@ public class gravity extends aframe {
 	}
 
 	public static void main(String[] args) {
-		new gravity();
+//		new gravity();
+		new bounceball();
 	}
 }
