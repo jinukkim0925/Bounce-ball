@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import aframe.aframe;
 import base.map;
 
-public class bounceball extends aframe{
+public class bounceball extends aframe {
 
 	int h = 300, jp = 0, x = 50, inc[][] = new int[5][2];
 	double g = 1, m = 1;
@@ -21,11 +21,14 @@ public class bounceball extends aframe{
 	Thread th = new Thread(this);
 	boolean run = true;
 	
+	private static int stage = 1;
+	
 	
 	public bounceball() {
 		// TODO Auto-generated constructor stub
 		fs("¹Ù¿î½ºº¼");
-		
+
+		//¾Û
 		cp.add(ap = new JPanel(new BorderLayout()) {
 			@Override
 			protected void paintComponent(Graphics g) {
@@ -35,17 +38,17 @@ public class bounceball extends aframe{
 					for (int j = 0; j < map.stage1[i].length; j++) {
 						if (map.stage1[i][j] == 1) {
 							g.setColor(Color.red);
-							g.fillRect(i*30, j*30, 30, 30);
+							g.fillRect(i * 30, j * 30, 30, 30);
 						}
 					}
 				}
 			}
 		});
-		
+
 		ap.setBackground(Color.white);
-		size(cp,1050,600);
-		size(ap,1050,600);
-	
+		size(cp, 1050, 600);
+		size(ap, 1050, 600);
+
 		ap.add(bounce = new JPanel() {
 			@Override
 			protected void paintComponent(Graphics g) {
@@ -59,10 +62,10 @@ public class bounceball extends aframe{
 				g.fillOval(x, h, 30, 30);
 			}
 		});
-		
+
 		bounce.setOpaque(false);
-		size(bounce,1050,600);
-		
+		size(bounce, 1050, 600);
+
 		this.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -94,7 +97,7 @@ public class bounceball extends aframe{
 
 			}
 		});
-		
+
 		th.start();
 		sh();
 	}
@@ -122,23 +125,26 @@ public class bounceball extends aframe{
 				}
 				
 				th.sleep(10);
-				
+
 				int x2 = x + 30;
-				if (map.stage1[x/30][(h+30)/30] == 1 || map.stage1[x2/30][(h+30)/30] == 1) {
+				if (map.stage1[x / 30][(h + 30) / 30] == 1 || map.stage1[x2 / 30][(h + 30) / 30] == 1) {
 					jp = 1;
 					g = 5;
 				} else if (g <= 0) {
 					jp = 0;
 				}
 				
-				
+				if (map.stage1[x / 30][h / 30] == 1 || map.stage1[x2 / 30][h / 30] == 1) {
+					jp = 0;
+				}
+
 				repaint();
 				revalidate();
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
-			
+
 		}
 	}
-	
+
 }
