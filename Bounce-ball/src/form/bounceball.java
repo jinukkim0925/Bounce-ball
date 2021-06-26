@@ -1,12 +1,17 @@
 package form;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.BitSet;
 
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import aframe.aframe;
@@ -16,32 +21,75 @@ public class bounceball extends aframe {
 
 	int h = 300, jp = 0, x = 50, inc[][] = new int[5][2];
 	double g = 1, m = 1;
-	
+
 	JPanel bounce;
 	Thread th = new Thread(this);
-	boolean run = true;
-	
+	boolean run = true, eatstar = false;
+
 	private static int stage = 1;
+	private static long smilli = 0, emilli = 0;
+	private static int wall[][] = new int[35][20];
+	private static int star[][] = new int[35][20];
 	
 	
+	public static void main(String[] args) {
+		new bounceball();
+	}
+
 	public bounceball() {
 		// TODO Auto-generated constructor stub
 		fs("바운스볼");
 
-		//앱
+		// 맵 저장
+		map.stage.add(map.stage6);
+		map.stage.add(map.stage5);
+		map.stage.add(map.stage4);
+		map.stage.add(map.stage3);
+		map.stage.add(map.stage2);
+		map.stage.add(map.stage1);
+
+		// 별 저장
+		base.star.star.add(map.stage6);
+		base.star.star.add(map.stage5);
+		base.star.star.add(map.stage4);
+		base.star.star.add(map.stage3);
+		base.star.star.add(map.stage2);
+		base.star.star.add(map.stage1);
+
+		// 불러오기
+		wall = map.stage.pop();
+
+		star = base.star.star.pop();
+		star = base.star.star.pop();
+		star = base.star.star.pop();
+
+		// 앱
 		cp.add(ap = new JPanel(new BorderLayout()) {
 			@Override
 			protected void paintComponent(Graphics g) {
 				// TODO Auto-generated method stub
 				super.paintComponent(g);
-				for (int i = 0; i < map.stage1.length; i++) {
-					for (int j = 0; j < map.stage1[i].length; j++) {
-						if (map.stage1[i][j] == 1) {
+				// 벽
+				for (int i = 0; i < wall.length; i++) {
+					for (int j = 0; j < wall[i].length; j++) {
+						if (wall[i][j] == 1) {
 							g.setColor(Color.red);
 							g.fillRect(i * 30, j * 30, 30, 30);
 						}
 					}
 				}
+
+				// 별
+				for (int i = 0; i < wall.length; i++) {
+					for (int j = 0; j < wall[i].length; j++) {
+						if (star[i][j] == 1) {
+							ImageIcon ic = new ImageIcon("img/star.png");
+							Image im = ic.getImage();
+							g.drawImage(im, i * 30, j * 30, 30, 30, this);
+						}
+					}
+				}
+
 			}
 		});
 
@@ -54,12 +102,22 @@ public class bounceball extends aframe {
 			protected void paintComponent(Graphics g) {
 				// TODO Auto-generated method stub
 				super.paintComponent(g);
-				for (int i = 0; i < inc.length; i++) {
-					g.setColor(new Color(220 - i * 50, 220 - i * 50, 220 - i * 50));
-					g.fillOval(inc[i][0], inc[i][1], 30, 30);
-				}
+//				for (int i = 0; i < inc.length; i++) {
+//					g.setColor(new Color(220 - i * 50, 220 - i * 50, 220 - i * 50));
+//					g.fillOval(inc[i][0], inc[i][1], 30, 30);
+//				}
 				g.setColor(Color.yellow);
 				g.fillOval(x, h, 30, 30);
+				g.setColor(Color.black);
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setStroke(new BasicStroke(2));
+				g2.drawOval(x, h, 30, 30);
+//				if (eatstar) {
+//					for (int i = 0; i < 5; i++) {
+//						g2.fillOval(x+i*10, h+i*10, 20, 20);
+//					}
+//					eatstar = false;
+//				}
 			}
 		});
 
@@ -70,21 +128,30 @@ public class bounceball extends aframe {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				// TODO Auto-generated method stub
-				if (e.getKeyCode() == 37) {
-					for (int i = 0; i < 3; i++) {
-						x--;
-						repaint();
-						revalidate();
+				if (x < 0 || h < 0 || (h + 30) / 30 > 19 || (x + 30) / 30 > 34) {
+					// 맵 밖
+				} else {
+					if (e.getKeyCode() == 37) {
+						for (int i = 0; i < 4; i++) {
+							if (wall[(x - 1) / 30][h / 30] == 1 || wall[(x - 1) / 30][(h + 30) / 30] == 1) {// 왼쪽
+								return;
+							}
+							x--;
+							getstar(x, h);
+							repaint();
+							revalidate();
+						}
 					}
-					if (e.getKeyCode() == 32) {
-						x = x - 30;
-					}
-				}
-				if (e.getKeyCode() == 39) {
-					for (int i = 0; i < 3; i++) {
-						x++;
-						repaint();
-						revalidate();
+					if (e.getKeyCode() == 39) {
+						for (int i = 0; i < 4; i++) {
+							if (wall[(x + 31) / 30][h / 30] == 1 || wall[(x + 31) / 30][(h + 30) / 30] == 1) {// 오른쪽
+								return;
+							}
+							x++;
+							getstar(x, h);
+							repaint();
+							revalidate();
+						}
 					}
 				}
 			}
@@ -99,7 +166,32 @@ public class bounceball extends aframe {
 		});
 
 		th.start();
+		smilli = System.currentTimeMillis();
 		sh();
+	}
+
+	public void getstar(int x, int h) {
+		if (star[x / 30][h / 30] == 1) {
+			star[x / 30][h / 30] = 0;
+			eatstar = true;
+			return;
+		}
+		if (star[x / 30][(h + 30) / 30] == 1) {
+			star[x / 30][(h + 30) / 30] = 0;
+			eatstar = true;
+			return;
+		}
+		if (star[(x + 30) / 30][h / 30] == 1) {
+			star[(x + 30) / 30][h / 30] = 0;
+			eatstar = true;
+			return;
+		}
+		if (star[(x + 30) / 30][(h + 30) / 30] == 1) {
+			star[(x + 30) / 30][(h + 30) / 30] = 0;
+			eatstar = true;
+			return;
+		}
+
 	}
 
 	@Override
@@ -123,20 +215,61 @@ public class bounceball extends aframe {
 					g = g - 0.098;
 					h = (int) (h - g);
 				}
-				
+				if (x < 0 || h < 0 || (h + 30) / 30 > 19 || (x + 30) / 30 > 34) {
+					
+				}else {
+					getstar(x, h);
+				}
 				th.sleep(10);
 
 				int x2 = x + 30;
-				if (map.stage1[x / 30][(h + 30) / 30] == 1 || map.stage1[x2 / 30][(h + 30) / 30] == 1) {
-					jp = 1;
-					g = 5;
-				} else if (g <= 0) {
-					jp = 0;
+
+				if (x < 0 || h < 0 || (h + 30) / 30 > 19 || (x + 30) / 30 > 34) {
+					// 맵 밖
+//					System.err.println(h + "/" + x);
+					if (h >= 600) {
+						//죽음
+						gameEnd();
+					}
+				} else {
+					if (wall[x / 30][(h + 30) / 30] == 1 || wall[x2 / 30][(h + 30) / 30] == 1) {// 바닥
+						jp = 1;
+						g = 5;
+					} else if (g <= 0) {
+						jp = 0;
+					}
+
+					if (wall[x / 30][h / 30] == 1 || wall[x2 / 30][h / 30] == 1) {// 천장
+						jp = 0;
+					}
+
+				}
+
+				
+				int cnt = 0;
+				for (int i = 0; i < wall.length; i++) {
+					for (int j = 0; j < wall[i].length; j++) {
+						if (star[i][j] == 1) {
+							cnt++;
+						}
+					}
 				}
 				
-				if (map.stage1[x / 30][h / 30] == 1 || map.stage1[x2 / 30][h / 30] == 1) {
-					jp = 0;
+				if (cnt == 0) {//스테이지 클리어
+					if (map.stage.size() == 0) {
+						// 다깸
+						gameEnd();
+					}else {
+						h = 300;
+						x = 50;
+						wall = map.stage.pop();
+						star = base.star.star.pop();
+						stage++;
+					}
 				}
+				
+				
+				
 
 				repaint();
 				revalidate();
@@ -146,5 +279,12 @@ public class bounceball extends aframe {
 
 		}
 	}
-
+	
+	public void gameEnd() {
+		emilli = System.currentTimeMillis();
+		String s =JOptionPane.showInputDialog(this,"스테이지 : "+ stage +" /n 걸린시간 : "+ ss.format(emilli-smilli) +" /n이름을 입력해 주세요.:");
+		dispose();
+		run = false;
+	}
+	
 }

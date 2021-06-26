@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 
 import aframe.aframe;
 
-public class gravity extends aframe {
+public class gravity_test extends aframe {
 
 	Thread th = new Thread(this);
 	int h = 1, jp = 0, x = 50, inc[][] = new int[5][2], botton = 1000, doublejump = 0;
@@ -32,7 +32,7 @@ public class gravity extends aframe {
 	BufferedImage bi;
 	static int p1, p2, p3, p4;
 
-	public gravity() {
+	public gravity_test() {
 
 		// TODO Auto-generated constructor stub
 		fs("바운스볼");
