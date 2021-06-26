@@ -268,9 +268,6 @@ public class bounceball extends aframe {
 					}
 				}
 				
-				
-				
-
 				repaint();
 				revalidate();
 			} catch (Exception e) {
