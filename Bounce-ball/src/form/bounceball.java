@@ -90,7 +90,7 @@ public class bounceball extends aframe {
 				for (int i = 0; i < wall.length; i++) {
 					for (int j = 0; j < wall[i].length; j++) {
 						if (star[i][j] == 1) {
-							ImageIcon ic = new ImageIcon("img/star.png");
+							ImageIcon ic = new ImageIcon("image/star.png");
 							Image im = ic.getImage();
 							g.drawImage(im, i * 30, j * 30, 30, 30, this);
 						}
